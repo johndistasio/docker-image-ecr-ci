@@ -39,10 +39,5 @@ workflows:
             branches:
               only:
                 - master
-  tag:
-    jobs:
-      - build:
-          context: AWS
-          filters:
             tags:
               only: /^[0-9a-zA-Z]+/
