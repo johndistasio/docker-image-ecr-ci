@@ -36,3 +36,10 @@ workflows:
             branches:
               only:
                 - master
+  tag:
+    jobs:
+      - build:
+          context: AWS
+          filters:
+            tags:
+              only: /^.*/
