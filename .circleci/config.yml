@@ -19,11 +19,14 @@ jobs:
       - run:
           name: Push Docker Image
           command: |
-            GIT_TAG=$(git describe --tags --always)
+            GIT_TAG="$(git describe --tags --always)"
+            GIT_REV="$(git rev-parse --short HEAD)"
             $(aws ecr get-login --no-include-email)
             docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
+            docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_REV
             docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_REV
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
 
 workflows:
