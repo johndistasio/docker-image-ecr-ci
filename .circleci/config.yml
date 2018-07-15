@@ -41,4 +41,4 @@ workflows:
                 - master
             tags:
               only:
-                - /^[0-9a-zA-Z]+/
+                - /^.+/
