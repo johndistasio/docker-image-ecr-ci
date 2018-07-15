@@ -21,8 +21,8 @@ jobs:
           command: |
             GIT_TAG=$(git describe --tags --always)
             $(aws ecr get-login --no-include-email)
-            docker tag responder $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
-            docker tag responder $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
+            docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
+            docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
 
