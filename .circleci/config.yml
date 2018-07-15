@@ -45,4 +45,4 @@ workflows:
           context: AWS
           filters:
             tags:
-              only: /^.*/
+              only: /^[0-9a-zA-Z]+/
