@@ -19,15 +19,28 @@ jobs:
       - run:
           name: Push Docker Image
           command: |
-            GIT_TAG="$(git describe --tags --always)"
             GIT_REV="$(git rev-parse --short HEAD)"
             $(aws ecr get-login --no-include-email)
-            docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
             docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_REV
             docker tag ecr-ci $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
-            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_TAG
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:$GIT_REV
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:latest
+  tag:
+    docker:
+      - image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-ci:1.0.3
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Tag Image
+          command: |
+            GIT_REV="$(git rev-parse --short HEAD)"
+            MANIFEST=$(aws ecr batch-get-image --repository-name ecr-ci --image-ids imageTag=$GIT_REV --query images[].imageManifest --output text)
+            aws ecr put-image --repository-name ecr-ci --image-tag $CIRCLE_TAG --image-manifest "$MANIFEST"
 
 workflows:
   version: 2
@@ -37,8 +50,11 @@ workflows:
           context: AWS
           filters:
             branches:
-              only:
-                - master
+              only: master
+      - tag :
+          context: AWS
+          filters:
+            branches:
+              ignore: /.*/
             tags:
-              only:
-                - /^.+/
+              only: /^.+/
